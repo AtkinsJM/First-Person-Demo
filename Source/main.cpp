@@ -29,7 +29,7 @@ int main(int argc, const char* argv[])
 	//mainCamera->SetDebugPhysicsMode(true);
 
 	float movementSpeed = 5;
-	float jumpSpeed = 10;
+	float jumpSpeed = 7;
 	float turnRate = 0.15f;
 	float lookUpRate = 0.1f;
 	float lookUpAngleClamp = 75.0f;

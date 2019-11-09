@@ -11,11 +11,13 @@ FirstPersonController::FirstPersonController()
 	lookUpRate = 0.1f;
 	lookUpAngleClamp = 75.0f;
 
-	standingHeight = 1.8f;
-	crouchingHeight = 0.9f;
+	standingHeight = 1.7f;
+	crouchingHeight = 1.0f;
 
 	crouchingSpeedModifier = 0.5f;
 	sprintingSpeedModifier = 2.0f;
+
+	characterWidth = 0.8f;
 }
 
 FirstPersonController::~FirstPersonController()
@@ -30,7 +32,7 @@ void FirstPersonController::Attach()
 	mainCamera->SetDebugPhysicsMode(true);
 
 	Entity* playerStart = World::GetCurrent()->FindEntity("Player Start");
-	
+		
 	Vec3 playerPos = playerStart ? playerStart->GetPosition() : Vec3(0, 2, 0);
 
 	entity->SetPosition(playerPos);
@@ -63,7 +65,7 @@ void FirstPersonController::HandleInput()
 	float turnRotation = entity->GetRotation().y + (mouseDelta.x * turnRate);
 	float lookUpRotation = Math::Clamp(mainCamera->GetRotation().x + (mouseDelta.y * lookUpRate), -lookUpAngleClamp, lookUpAngleClamp);
 
-	bool bCrouching = gameWindow->KeyDown(Key::ControlKey);
+	bool bCrouching = gameWindow->KeyDown(Key::ControlKey) || !CanStand();
 	bool bSprinting = gameWindow->KeyDown(Key::Shift);
 
 	// Set camera height depending on whether or not player is crouching
@@ -90,6 +92,16 @@ bool FirstPersonController::IsGrounded()
 {
 	PickInfo pickinfo;
 	return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.01f, 0), entity->GetPosition() - Vec3(0, 0.01f, 0), pickinfo);
+}
+
+bool FirstPersonController::CanStand()
+{
+	PickInfo pickinfo;
+	return !(World::GetCurrent()->Pick(entity->GetPosition(), entity->GetPosition() + Vec3(0, crouchingHeight + 20, 0), pickinfo) || 
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0, characterWidth/2), entity->GetPosition() + Vec3(0, crouchingHeight * 1.5f, characterWidth/2), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0, -characterWidth / 2), entity->GetPosition() + Vec3(0, crouchingHeight * 1.5f, -characterWidth / 2), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(-characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(-characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo));
 }
 
 void FirstPersonController::UpdatePhysics()

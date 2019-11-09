@@ -22,6 +22,7 @@ class FirstPersonController : public Actor
 
 		void HandleInput();
 		bool IsGrounded();
+		bool CanStand();
 
 	private:
 		float walkingSpeed;
@@ -36,4 +37,5 @@ class FirstPersonController : public Actor
 		float crouchingHeight;
 		float crouchingSpeedModifier;
 		float sprintingSpeedModifier;
+		float characterWidth;
 };

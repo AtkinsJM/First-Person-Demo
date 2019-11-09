@@ -38,4 +38,7 @@ class FirstPersonController : public Actor
 		float crouchingSpeedModifier;
 		float sprintingSpeedModifier;
 		float characterWidth;
+
+		Entity* carriedEntity;
+		Entity* picksphere;
 };

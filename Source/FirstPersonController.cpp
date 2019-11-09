@@ -18,6 +18,15 @@ FirstPersonController::FirstPersonController()
 	sprintingSpeedModifier = 2.0f;
 
 	characterWidth = 0.8f;
+
+	carriedEntity = nullptr;
+
+
+	picksphere = Model::Sphere();
+	picksphere->SetColor(1.0, 0.0, 0.0);
+	picksphere->SetPickMode(0);
+	picksphere->SetScale(0.5f * 2.0);
+	picksphere->Hide();
 }
 
 FirstPersonController::~FirstPersonController()
@@ -39,13 +48,35 @@ void FirstPersonController::Attach()
 
 	entity->SetPhysicsMode(Entity::CharacterPhysics);
 	
-	entity->SetMass(70);
+	entity->SetMass(70);	
+
 }
 
 void FirstPersonController::UpdateWorld()
 {
 	Print(IsGrounded());
 	HandleInput();
+	PickInfo pickInfo;
+	picksphere->Hide();
+	if (mainCamera->Pick(screenCentre.x, screenCentre.y, pickInfo))
+	{
+		
+		if ((pickInfo.position - entity->GetPosition()).Length() <= 2.0f)
+		{
+			picksphere->Show();
+			picksphere->SetPosition(pickInfo.position);
+			if (pickInfo.entity && gameWindow->KeyHit(Key::E))
+			{
+				carriedEntity = pickInfo.entity;
+			}
+		}
+
+	}
+	if (carriedEntity)
+	{
+		//Vec3 dist = pickInfo.position - entity->GetPosition().Normalize();
+		//carriedEntity->SetPosition(dist);
+	}
 }
 
 void FirstPersonController::HandleInput()

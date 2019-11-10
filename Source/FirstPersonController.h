@@ -24,6 +24,8 @@ class FirstPersonController : public Actor
 		bool IsGrounded();
 		bool CanStand();
 
+		FORCEINLINE Vec3 Forward() { return TFormVector(0, 0, 1, mainCamera, NULL); }
+
 	private:
 		float walkingSpeed;
 		float jumpSpeed;
@@ -38,7 +40,8 @@ class FirstPersonController : public Actor
 		float crouchingSpeedModifier;
 		float sprintingSpeedModifier;
 		float characterWidth;
+		float reach;
+		float maxCarryMass;
 
 		Entity* carriedEntity;
-		Entity* picksphere;
 };

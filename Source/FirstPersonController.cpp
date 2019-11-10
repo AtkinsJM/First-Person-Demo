@@ -1,5 +1,7 @@
 #include "FirstPersonController.h"
 
+#define OUT
+
 FirstPersonController::FirstPersonController()
 {
 	gameWindow = Window::GetCurrent();
@@ -19,14 +21,11 @@ FirstPersonController::FirstPersonController()
 
 	characterWidth = 0.8f;
 
+	reach = 2.0f;
 	carriedEntity = nullptr;
 
+	maxCarryMass = 100.0f;
 
-	picksphere = Model::Sphere();
-	picksphere->SetColor(1.0, 0.0, 0.0);
-	picksphere->SetPickMode(0);
-	picksphere->SetScale(0.5f * 2.0);
-	picksphere->Hide();
 }
 
 FirstPersonController::~FirstPersonController()
@@ -41,7 +40,7 @@ void FirstPersonController::Attach()
 	mainCamera->SetDebugPhysicsMode(true);
 
 	Entity* playerStart = World::GetCurrent()->FindEntity("Player Start");
-		
+
 	Vec3 playerPos = playerStart ? playerStart->GetPosition() : Vec3(0, 2, 0);
 
 	entity->SetPosition(playerPos);
@@ -54,29 +53,35 @@ void FirstPersonController::Attach()
 
 void FirstPersonController::UpdateWorld()
 {
-	Print(IsGrounded());
 	HandleInput();
 	PickInfo pickInfo;
-	picksphere->Hide();
-	if (mainCamera->Pick(screenCentre.x, screenCentre.y, pickInfo))
+
+	if (gameWindow->KeyHit(Key::E))
 	{
-		
-		if ((pickInfo.position - entity->GetPosition()).Length() <= 2.0f)
+		if (carriedEntity)
 		{
-			picksphere->Show();
-			picksphere->SetPosition(pickInfo.position);
-			if (pickInfo.entity && gameWindow->KeyHit(Key::E))
+			carriedEntity->SetGravityMode(true);
+			carriedEntity = nullptr;
+		}
+		else
+		{
+			if (World::GetCurrent()->Pick(mainCamera->GetPosition(true), mainCamera->GetPosition(true) + (Forward() * reach), OUT pickInfo))
 			{
-				carriedEntity = pickInfo.entity;
+				if (pickInfo.entity && (pickInfo.entity->GetKeyValue("tag", "") == "Interactable"))
+				{
+					carriedEntity = pickInfo.entity;
+					carriedEntity->SetGravityMode(false);
+				}
 			}
 		}
-
 	}
+	
 	if (carriedEntity)
 	{
-		//Vec3 dist = pickInfo.position - entity->GetPosition().Normalize();
-		//carriedEntity->SetPosition(dist);
+		
+		carriedEntity->PhysicsSetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
 	}
+	
 }
 
 void FirstPersonController::HandleInput()

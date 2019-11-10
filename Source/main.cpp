@@ -16,6 +16,7 @@ int main(int argc, const char* argv[])
 	gameWindow->HideMouse();
 			
 	Model* player = Model::Create();
+	player->SetKeyValue("name", "Player");
 	Actor* firstPersonController = new FirstPersonController;
 	player->SetActor(firstPersonController);
 		

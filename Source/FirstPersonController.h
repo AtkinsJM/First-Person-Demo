@@ -21,8 +21,12 @@ class FirstPersonController : public Actor
 		//virtual void ReceiveSignal(const std::string& inputname, Entity* sender);
 
 		void HandleInput();
+		void HandleCarrying();
 		bool IsGrounded();
 		bool CanStand();
+
+		void PickUpObject(Entity* obj);
+		void DropObject();
 
 		FORCEINLINE Vec3 Forward() { return TFormVector(0, 0, 1, mainCamera, NULL); }
 
@@ -43,5 +47,7 @@ class FirstPersonController : public Actor
 		float reach;
 		float maxCarryMass;
 
-		Entity* carriedEntity;
+		Joint* carriedObjectJoint;
+		Entity* carriedObject;
+		Entity* carryPivot;
 };

@@ -22,7 +22,9 @@ FirstPersonController::FirstPersonController()
 	characterWidth = 0.8f;
 
 	reach = 2.0f;
-	carriedEntity = nullptr;
+	carriedObjectJoint = nullptr;
+	carriedObject = nullptr;
+	carryPivot = nullptr;
 
 	maxCarryMass = 100.0f;
 
@@ -49,38 +51,17 @@ void FirstPersonController::Attach()
 	
 	entity->SetMass(70);	
 
+	carryPivot = Pivot::Create(mainCamera);
+	carryPivot->SetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
+	//grabber->Hide();
+
 }
 
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
-	PickInfo pickInfo;
 
-	if (gameWindow->KeyHit(Key::E))
-	{
-		if (carriedEntity)
-		{
-			carriedEntity->SetGravityMode(true);
-			carriedEntity = nullptr;
-		}
-		else
-		{
-			if (World::GetCurrent()->Pick(mainCamera->GetPosition(true), mainCamera->GetPosition(true) + (Forward() * reach), OUT pickInfo))
-			{
-				if (pickInfo.entity && (pickInfo.entity->GetKeyValue("tag", "") == "Interactable"))
-				{
-					carriedEntity = pickInfo.entity;
-					carriedEntity->SetGravityMode(false);
-				}
-			}
-		}
-	}
-	
-	if (carriedEntity)
-	{
-		
-		carriedEntity->PhysicsSetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
-	}
+	HandleCarrying();
 	
 }
 
@@ -124,6 +105,36 @@ void FirstPersonController::HandleInput()
 	mainCamera->SetRotation(lookUpRotation, 0, 0);
 }
 
+void FirstPersonController::HandleCarrying()
+{
+	if (gameWindow->KeyHit(Key::E))
+	{
+		// If currently carrying an object, drop it
+		if (carriedObject)
+		{
+			DropObject();
+		}
+		else
+		{
+			// If there's an object in reach that is interactable, pick it up
+			PickInfo pickInfo;
+			if (World::GetCurrent()->Pick(mainCamera->GetPosition(true), mainCamera->GetPosition(true) + (Forward() * reach), OUT pickInfo))
+			{
+				if (pickInfo.entity && (pickInfo.entity->GetKeyValue("tag", "") == "Interactable"))
+				{
+					PickUpObject(pickInfo.entity);
+				}
+			}
+		}
+	}
+	// Update carried object position and rotation via joint
+	if (carriedObject && carriedObjectJoint)
+	{
+		carriedObjectJoint->SetTargetPosition(carryPivot->GetPosition(true), 0.45f);
+		carriedObjectJoint->SetTargetRotation(entity->GetRotation(), 0.25f);
+	}
+}
+
 bool FirstPersonController::IsGrounded()
 {
 	PickInfo pickinfo;
@@ -138,6 +149,21 @@ bool FirstPersonController::CanStand()
 		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0, -characterWidth / 2), entity->GetPosition() + Vec3(0, crouchingHeight * 1.5f, -characterWidth / 2), pickinfo) ||
 		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo) ||
 		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(-characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(-characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo));
+}
+
+void FirstPersonController::PickUpObject(Entity* obj)
+{
+	carriedObject = obj;
+	carriedObject->SetGravityMode(false);
+	carriedObjectJoint = Joint::Kinematic(0.0f, 0.0f, 0.0f, carriedObject);
+}
+
+void FirstPersonController::DropObject()
+{
+	carriedObject->SetGravityMode(true);
+	carriedObject->SetCollisionType(Collision::Prop);
+	carriedObjectJoint->Release();
+	carriedObject = nullptr;
 }
 
 void FirstPersonController::UpdatePhysics()

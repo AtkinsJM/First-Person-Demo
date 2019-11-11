@@ -26,7 +26,7 @@ FirstPersonController::FirstPersonController()
 	carriedObject = nullptr;
 	carryPivot = nullptr;
 
-	maxCarryMass = 100.0f;
+	maxCarryMass = 30.0f;
 
 }
 
@@ -46,23 +46,18 @@ void FirstPersonController::Attach()
 	Vec3 playerPos = playerStart ? playerStart->GetPosition() : Vec3(0, 2, 0);
 
 	entity->SetPosition(playerPos);
-
 	entity->SetPhysicsMode(Entity::CharacterPhysics);
-	
 	entity->SetMass(70);	
 
 	carryPivot = Pivot::Create(mainCamera);
 	carryPivot->SetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
-	//grabber->Hide();
-
 }
 
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
 
-	HandleCarrying();
-	
+	HandleCarrying();	
 }
 
 void FirstPersonController::HandleInput()
@@ -161,7 +156,6 @@ void FirstPersonController::PickUpObject(Entity* obj)
 void FirstPersonController::DropObject()
 {
 	carriedObject->SetGravityMode(true);
-	carriedObject->SetCollisionType(Collision::Prop);
 	carriedObjectJoint->Release();
 	carriedObject = nullptr;
 }

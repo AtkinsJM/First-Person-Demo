@@ -1,5 +1,6 @@
 #include "Leadwerks.h"
 #include "FirstPersonController.h"
+#include "PressurePad.h"
 
 using namespace Leadwerks;
 
@@ -19,6 +20,31 @@ int main(int argc, const char* argv[])
 	player->SetKeyValue("name", "Player");
 	Actor* firstPersonController = new FirstPersonController;
 	player->SetActor(firstPersonController);
+
+	for (int t = 0; t < World::GetCurrent()->CountEntities(); ++t)
+	{
+		Entity* e = World::GetCurrent()->GetEntity(t);
+		if (e->GetKeyValue("name") != "")
+		{
+			Print(e->GetKeyValue("name"));
+		}
+		else
+		{
+			Print("Entity found without name!");
+		}
+	}
+	Entity* pressurePadObj = World::GetCurrent()->FindEntity("Pressure Pad");
+	if (pressurePadObj)
+	{
+		pressurePadObj->SetKeyValue("name", "Pressure Pad");
+		Actor* pressurePad = new PressurePad;
+		pressurePadObj->SetActor(pressurePad);
+	}
+	else
+	{
+		Print("No pressure pad found!");
+	}
+	Collision::SetResponse(Collision::Trigger, Collision::Prop, Collision::Trigger);
 		
 	while (true)
 	{		

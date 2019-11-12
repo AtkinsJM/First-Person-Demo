@@ -137,7 +137,13 @@ void FirstPersonController::HandleCarrying()
 bool FirstPersonController::IsGrounded()
 {
 	PickInfo pickinfo;
-	return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo);
+	//return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo);
+
+	return (World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, characterWidth / 2), entity->GetPosition() - Vec3(0, 0.15f, characterWidth / 2), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, -characterWidth / 2), entity->GetPosition() - Vec3(0, 0.15f, -characterWidth / 2), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(characterWidth / 2, 0.15f, 0), entity->GetPosition() - Vec3(characterWidth / 2, 0.15f, 0), pickinfo) ||
+		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(-characterWidth / 2, 0.15f, 0), entity->GetPosition() - Vec3(-characterWidth / 2, 0.15f, 0), pickinfo));
 }
 
 bool FirstPersonController::CanStand()

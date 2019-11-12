@@ -50,4 +50,7 @@ class FirstPersonController : public Actor
 		Joint* carriedObjectJoint;
 		Entity* carriedObject;
 		Entity* carryPivot;
+
+		bool bCrouching;
+		bool bSprinting;
 };

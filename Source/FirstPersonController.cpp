@@ -29,6 +29,9 @@ FirstPersonController::FirstPersonController(Camera* camera)
 
 	maxCarryMass = 30.0f;
 
+	bCrouching = false;
+	bSprinting = false;
+
 }
 
 FirstPersonController::~FirstPersonController()
@@ -78,8 +81,8 @@ void FirstPersonController::HandleInput()
 	float turnRotation = entity->GetRotation().y + (mouseDelta.x * turnRate);
 	float lookUpRotation = Math::Clamp(mainCamera->GetRotation().x + (mouseDelta.y * lookUpRate), -lookUpAngleClamp, lookUpAngleClamp);
 
-	bool bCrouching = window->KeyDown(Key::ControlKey) || !CanStand();
-	bool bSprinting = window->KeyDown(Key::Shift);
+	bCrouching = window->KeyDown(Key::ControlKey) || (bCrouching && !CanStand());
+	bSprinting = window->KeyDown(Key::Shift);
 
 	// Set camera height depending on whether or not player is crouching
 	Vec3 cameraPosition = mainCamera->GetPosition();

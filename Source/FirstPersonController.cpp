@@ -60,7 +60,7 @@ void FirstPersonController::Attach()
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
-
+	Print(IsGrounded());
 	HandleCarrying();	
 }
 
@@ -137,23 +137,14 @@ void FirstPersonController::HandleCarrying()
 bool FirstPersonController::IsGrounded()
 {
 	PickInfo pickinfo;
-	//return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo);
-
-	return (World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, characterWidth / 2), entity->GetPosition() - Vec3(0, 0.15f, characterWidth / 2), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, -characterWidth / 2), entity->GetPosition() - Vec3(0, 0.15f, -characterWidth / 2), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(characterWidth / 2, 0.15f, 0), entity->GetPosition() - Vec3(characterWidth / 2, 0.15f, 0), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(-characterWidth / 2, 0.15f, 0), entity->GetPosition() - Vec3(-characterWidth / 2, 0.15f, 0), pickinfo));
+	return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.45f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo, 0.40f, true);
 }
 
 bool FirstPersonController::CanStand()
 {
 	PickInfo pickinfo;
-	return !(World::GetCurrent()->Pick(entity->GetPosition(), entity->GetPosition() + Vec3(0, crouchingHeight + 20, 0), pickinfo) || 
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0, characterWidth/2), entity->GetPosition() + Vec3(0, crouchingHeight * 1.5f, characterWidth/2), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0, -characterWidth / 2), entity->GetPosition() + Vec3(0, crouchingHeight * 1.5f, -characterWidth / 2), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo) ||
-		World::GetCurrent()->Pick(entity->GetPosition() + Vec3(-characterWidth / 2, 0, 0), entity->GetPosition() + Vec3(-characterWidth / 2, crouchingHeight * 1.5f, 0), pickinfo));
+
+	return !(World::GetCurrent()->Pick(entity->GetPosition(), entity->GetPosition() + Vec3(0, crouchingHeight + 20, 0), pickinfo, 0.40f, true));
 }
 
 void FirstPersonController::PickUpObject(Entity* obj)

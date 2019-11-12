@@ -4,8 +4,8 @@
 
 FirstPersonController::FirstPersonController()
 {
-	gameWindow = Window::GetCurrent();
-	screenCentre = Vec2(gameWindow->GetWidth() / 2, gameWindow->GetHeight() / 2);
+	window = Window::GetCurrent();
+	screenCentre = Vec2(window->GetWidth() / 2, window->GetHeight() / 2);
 
 	walkingSpeed = 4;
 	jumpSpeed = 7;
@@ -56,29 +56,29 @@ void FirstPersonController::Attach()
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
-
+	Print(IsGrounded());
 	HandleCarrying();	
 }
 
 void FirstPersonController::HandleInput()
 {
-	if (!gameWindow || !mainCamera) { return; }
+	if (!window || !mainCamera) { return; }
 
 	// Get mouse movement this frame, then recentre mouse
-	Vec3 mouseDelta = gameWindow->GetMousePosition() - Vec3(screenCentre.x, screenCentre.y);
-	gameWindow->SetMousePosition(screenCentre.x, screenCentre.y);
+	Vec3 mouseDelta = window->GetMousePosition() - Vec3(screenCentre.x, screenCentre.y);
+	window->SetMousePosition(screenCentre.x, screenCentre.y);
 
-	Vec2 movementInput = Vec2(gameWindow->KeyDown(Key::W) - gameWindow->KeyDown(Key::S), gameWindow->KeyDown(Key::D) - gameWindow->KeyDown(Key::A)).Normalize();
+	Vec2 movementInput = Vec2(window->KeyDown(Key::W) - window->KeyDown(Key::S), window->KeyDown(Key::D) - window->KeyDown(Key::A)).Normalize();
 
 	float forward = movementInput.x * walkingSpeed;
 	float right = movementInput.y * walkingSpeed;
-	float jump = IsGrounded() ? gameWindow->KeyHit(Key::Space) * jumpSpeed : 0;
+	float jump = IsGrounded() ? window->KeyHit(Key::Space) * jumpSpeed : 0;
 
 	float turnRotation = entity->GetRotation().y + (mouseDelta.x * turnRate);
 	float lookUpRotation = Math::Clamp(mainCamera->GetRotation().x + (mouseDelta.y * lookUpRate), -lookUpAngleClamp, lookUpAngleClamp);
 
-	bool bCrouching = gameWindow->KeyDown(Key::ControlKey) || !CanStand();
-	bool bSprinting = gameWindow->KeyDown(Key::Shift);
+	bool bCrouching = window->KeyDown(Key::ControlKey) || !CanStand();
+	bool bSprinting = window->KeyDown(Key::Shift);
 
 	// Set camera height depending on whether or not player is crouching
 	Vec3 cameraPosition = mainCamera->GetPosition();
@@ -102,7 +102,7 @@ void FirstPersonController::HandleInput()
 
 void FirstPersonController::HandleCarrying()
 {
-	if (gameWindow->KeyHit(Key::E))
+	if (window->KeyHit(Key::E))
 	{
 		// If currently carrying an object, drop it
 		if (carriedObject)
@@ -133,7 +133,7 @@ void FirstPersonController::HandleCarrying()
 bool FirstPersonController::IsGrounded()
 {
 	PickInfo pickinfo;
-	return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.01f, 0), entity->GetPosition() - Vec3(0, 0.01f, 0), pickinfo);
+	return World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.15f, 0), entity->GetPosition() - Vec3(0, 0.15f, 0), pickinfo);
 }
 
 bool FirstPersonController::CanStand()
@@ -150,12 +150,14 @@ void FirstPersonController::PickUpObject(Entity* obj)
 {
 	carriedObject = obj;
 	carriedObject->SetGravityMode(false);
+	carriedObject->SetCollisionType(Collision::Debris);
 	carriedObjectJoint = Joint::Kinematic(0.0f, 0.0f, 0.0f, carriedObject);
 }
 
 void FirstPersonController::DropObject()
 {
 	carriedObject->SetGravityMode(true);
+	carriedObject->SetCollisionType(Collision::Prop);
 	carriedObjectJoint->Release();
 	carriedObject = nullptr;
 }

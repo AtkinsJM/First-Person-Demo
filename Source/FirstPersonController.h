@@ -36,7 +36,7 @@ class FirstPersonController : public Actor
 		float turnRate;
 		float lookUpRate;
 		float lookUpAngleClamp;
-		Window* gameWindow;
+		Window* window;
 		Vec2 screenCentre;
 		Camera* mainCamera;
 		float standingHeight;

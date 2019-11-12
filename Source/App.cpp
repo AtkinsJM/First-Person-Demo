@@ -3,11 +3,10 @@
 
 using namespace Leadwerks;
 
-App::App() : window(NULL), context(NULL), world(NULL)
+App::App() : window(NULL), context(NULL), world(NULL), camera(NULL)
 {
 
 	bUseVSync = false;
-	//camera = nullptr;
 }
 
 App::~App()
@@ -21,14 +20,15 @@ bool App::Start()
 	window = Window::Create("My Game", 0, 0, 1024, 768);
 	context = Context::Create(window);
 	world = World::Create();
-	
+	camera = Camera::Create();
+
 	Map::Load("Maps/game.map");
 
 	window->HideMouse();
 
 	Model* player = Model::Create();
 	player->SetKeyValue("name", "Player");
-	Actor* firstPersonController = new FirstPersonController;
+	Actor* firstPersonController = new FirstPersonController(camera);
 	player->SetActor(firstPersonController);
 
 

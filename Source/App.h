@@ -12,7 +12,7 @@ class App
 		Leadwerks::Window* window;
 		Context* context;
 		World* world;
-		//Camera* camera;
+		Camera* camera;
 
 		App();
 		virtual ~App();

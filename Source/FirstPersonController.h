@@ -5,7 +5,7 @@ using namespace Leadwerks;
 class FirstPersonController : public Actor
 {
 	public:
-		FirstPersonController();
+		FirstPersonController(Camera* camera);
 		~FirstPersonController();
 		virtual void Attach();
 		//virtual void Detach();

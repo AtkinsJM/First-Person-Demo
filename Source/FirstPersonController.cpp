@@ -2,8 +2,9 @@
 
 #define OUT
 
-FirstPersonController::FirstPersonController()
+FirstPersonController::FirstPersonController(Camera* camera)
 {
+	mainCamera = camera;
 	window = Window::GetCurrent();
 	screenCentre = Vec2(window->GetWidth() / 2, window->GetHeight() / 2);
 
@@ -36,7 +37,7 @@ FirstPersonController::~FirstPersonController()
 
 void FirstPersonController::Attach()
 {
-	mainCamera = Camera::Create(entity);
+	mainCamera->SetParent(entity);
 	mainCamera->SetRotation(0, 0, 0);
 	mainCamera->SetPosition(0, standingHeight, 0);
 	mainCamera->SetDebugPhysicsMode(true);

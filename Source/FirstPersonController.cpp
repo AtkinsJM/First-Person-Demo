@@ -56,7 +56,7 @@ void FirstPersonController::Attach()
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
-	Print(IsGrounded());
+
 	HandleCarrying();	
 }
 
@@ -150,14 +150,13 @@ void FirstPersonController::PickUpObject(Entity* obj)
 {
 	carriedObject = obj;
 	carriedObject->SetGravityMode(false);
-	carriedObject->SetCollisionType(Collision::Debris);
 	carriedObjectJoint = Joint::Kinematic(0.0f, 0.0f, 0.0f, carriedObject);
+	Print(carriedObject->GetCollisionType());
 }
 
 void FirstPersonController::DropObject()
 {
 	carriedObject->SetGravityMode(true);
-	carriedObject->SetCollisionType(Collision::Prop);
 	carriedObjectJoint->Release();
 	carriedObject = nullptr;
 }

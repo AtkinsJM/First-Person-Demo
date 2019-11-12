@@ -1,6 +1,5 @@
 #include "App.h"
 #include "FirstPersonController.h"
-#include "PressurePad.h"
 
 using namespace Leadwerks;
 
@@ -45,20 +44,7 @@ bool App::Start()
 			Print("Entity found without name!");
 		}
 	}
-	Entity* pressurePadObj = World::GetCurrent()->FindEntity("Pressure Pad");
-	if (pressurePadObj)
-	{
-		pressurePadObj->SetKeyValue("name", "Pressure Pad");
-		Actor* pressurePad = new PressurePad;
-		pressurePadObj->SetActor(pressurePad);
-	}
-	else
-	{
-		Print("No pressure pad found!");
-	}
-
-	//Collision::SetResponse(Collision::Trigger, Collision::Prop, Collision::Trigger);
-
+	
 	return true;
 }
 

@@ -1,5 +1,6 @@
 #include "App.h"
 #include "FirstPersonController.h"
+#include "PressurePlate.h"
 
 using namespace Leadwerks;
 
@@ -45,6 +46,10 @@ bool App::Start()
 		}
 	}
 	
+	Entity* pressurePlateObj = world->FindEntity("Pressure Plate");
+	Actor* pressurePlate = new PressurePlate();
+	pressurePlateObj->SetActor(pressurePlate);
+
 	return true;
 }
 

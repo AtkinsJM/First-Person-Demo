@@ -13,7 +13,7 @@ class PressurePlate : public Actor
 		//virtual void Detach();
 		virtual void UpdateWorld();
 		//virtual void UpdateMatrix();
-		//virtual void UpdatePhysics();
+		virtual void UpdatePhysics();
 		//virtual void Wake();
 		//virtual void Sleep();
 		//virtual void Collision(Entity* entity, const Vec3& position, const Vec3& normal, float speed);
@@ -29,9 +29,8 @@ class PressurePlate : public Actor
 		Joint* springJoint;
 		float pressedHeight;
 		bool bPressed;
-		Texture* unpressedTexture;
-		Texture* pressedTexture;
-		Material* material;
+
+		Entity* model;
 
 		Material* pressedMat;
 		Material* unpressedMat;

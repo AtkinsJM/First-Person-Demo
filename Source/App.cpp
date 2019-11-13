@@ -33,9 +33,9 @@ bool App::Start()
 	player->SetActor(firstPersonController);
 
 
-	for (int t = 0; t < World::GetCurrent()->CountEntities(); ++t)
+	for (int t = 0; t < world->CountEntities(); ++t)
 	{
-		Entity* e = World::GetCurrent()->GetEntity(t);
+		Entity* e = world->GetEntity(t);
 		if (e->GetKeyValue("name") != "")
 		{
 			Print(e->GetKeyValue("name"));
@@ -45,7 +45,23 @@ bool App::Start()
 			Print("Entity found without name!");
 		}
 	}
-	
+
+	for (int i = 0; i < world->CountEntities(); i++)
+	{
+		Entity* e = world->GetEntity(i);
+		if (e->GetKeyValue("tag") == "PressurePlate")
+		{
+			Print("Found a pressure plate! Setting up now...");
+			Actor* pressurePlate = new PressurePlate();
+			e->SetActor(pressurePlate);
+		}
+		else if (e->GetKeyValue("name") == "crate1")
+		{
+			Print("Found a crate!");
+		}
+	}
+
+	/*
 	Entity* pressurePlateObj = world->FindEntity("PressurePlate");
 	if (pressurePlateObj)
 	{
@@ -56,7 +72,7 @@ bool App::Start()
 	{
 		Print("Pressure plate actor setting failed!");
 	}
-
+	*/
 
 	return true;
 }

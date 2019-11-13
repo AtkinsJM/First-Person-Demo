@@ -32,6 +32,8 @@ class PressurePlate : public Actor
 
 		Entity* model;
 
-		Material* pressedMat;
-		Material* unpressedMat;
+		Material* material;
+
+		Texture* pressedTex;
+		Texture* unpressedTex;
 };

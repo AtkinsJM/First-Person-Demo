@@ -4,13 +4,11 @@ PressurePlate::PressurePlate()
 {
 	springJoint = nullptr;
 	bPressed = false;
-	
-	unpressedTexture = nullptr;
-	pressedTexture = nullptr;
-	material = nullptr;
-	pressedMat = nullptr;
-	unpressedMat = nullptr;
+
 	model = nullptr;
+	material = nullptr;
+	pressedTex = nullptr;
+	unpressedTex = nullptr;
 }
 
 PressurePlate::~PressurePlate()
@@ -19,13 +17,27 @@ PressurePlate::~PressurePlate()
 
 void PressurePlate::Attach()
 {
-	pressedMat = Material::Load("Materials/Developer/greengrid.mat");
-	unpressedMat = Material::Load("Materials/Developer/orangegrid.mat");
-	model = entity->GetChild(0);
+	// Create material
+	material = Material::Create();
+
+	// Load and apply texture
+	pressedTex = Texture::Load("Materials/Developer/greengrid.tex");
+	unpressedTex = Texture::Load("Materials/Developer/orangegrid.tex");
+	material->SetTexture(unpressedTex);
+
+	//Load and apply a shader
+	Shader* shader = Shader::Load("Shaders/Model/diffuse.shader");
+	material->SetShader(shader);
+	shader->Release();
+
+	model = entity->FindChild("Model");
+	model->SetMaterial(material);
 
 	startingPos = entity->GetPosition();
 	startingRot = entity->GetRotation();
 	pressedHeight = startingPos.y - 0.19f;
+
+	// Set up spring joint
 	springJoint = Joint::Kinematic(0, 0, 0, entity);
 	int requiredMass = String::Int(entity->GetKeyValue("requiredMass"));
 	float friction = 100.0f + 5.0f * requiredMass;
@@ -51,6 +63,8 @@ void PressurePlate::TogglePressed()
 	bPressed = !bPressed;
 	if (model)
 	{
-		model->SetMaterial(bPressed ? pressedMat : unpressedMat);
+		material->SetTexture(bPressed ? pressedTex : unpressedTex);
+		Print("Model texture changing!");
+		Print(material->GetTexture());
 	}
 }

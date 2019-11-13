@@ -27,7 +27,7 @@ FirstPersonController::FirstPersonController(Camera* camera)
 	carriedObject = nullptr;
 	carryPivot = nullptr;
 
-	maxCarryMass = 30.0f;
+	maxCarryMass = 40.0f;
 
 	bCrouching = false;
 	bSprinting = false;
@@ -43,7 +43,7 @@ void FirstPersonController::Attach()
 	mainCamera->SetParent(entity);
 	mainCamera->SetRotation(0, 0, 0);
 	mainCamera->SetPosition(0, standingHeight, 0);
-	mainCamera->SetDebugPhysicsMode(true);
+	//mainCamera->SetDebugPhysicsMode(true);
 
 	Entity* playerStart = World::GetCurrent()->FindEntity("Player Start");
 
@@ -60,7 +60,7 @@ void FirstPersonController::Attach()
 void FirstPersonController::UpdateWorld()
 {
 	HandleInput();
-	Print(IsGrounded());
+
 	HandleCarrying();	
 }
 
@@ -129,7 +129,7 @@ void FirstPersonController::HandleCarrying()
 	// Update carried object position and rotation via joint
 	if (carriedObject && carriedObjectJoint)
 	{
-		carriedObjectJoint->SetTargetPosition(carryPivot->GetPosition(true), 0.45f);
+		carriedObjectJoint->SetTargetPosition(carryPivot->GetPosition(true), 0.40f);
 		carriedObjectJoint->SetTargetRotation(entity->GetRotation(), 0.25f);
 	}
 }
@@ -143,7 +143,6 @@ bool FirstPersonController::IsGrounded()
 bool FirstPersonController::CanStand()
 {
 	PickInfo pickinfo;
-
 	return !(World::GetCurrent()->Pick(entity->GetPosition(), entity->GetPosition() + Vec3(0, crouchingHeight + 20, 0), pickinfo, 0.40f, true));
 }
 
@@ -151,13 +150,18 @@ void FirstPersonController::PickUpObject(Entity* obj)
 {
 	carriedObject = obj;
 	carriedObject->SetGravityMode(false);
+	carriedMass = carriedObject->GetMass();
+	carriedObject->SetMass(1);
+	carriedObject->SetCollisionType(Collision::Debris);
 	carriedObjectJoint = Joint::Kinematic(0.0f, 0.0f, 0.0f, carriedObject);
-	Print(carriedObject->GetCollisionType());
 }
 
 void FirstPersonController::DropObject()
 {
 	carriedObject->SetGravityMode(true);
+	carriedObject->SetMass(carriedMass);
+	carriedMass = 0;
+	carriedObject->SetCollisionType(Collision::Prop);
 	carriedObjectJoint->Release();
 	carriedObject = nullptr;
 }

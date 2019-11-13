@@ -53,4 +53,6 @@ class FirstPersonController : public Actor
 
 		bool bCrouching;
 		bool bSprinting;
+
+		float carriedMass;
 };

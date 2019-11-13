@@ -46,9 +46,17 @@ bool App::Start()
 		}
 	}
 	
-	Entity* pressurePlateObj = world->FindEntity("Pressure Plate");
-	Actor* pressurePlate = new PressurePlate();
-	pressurePlateObj->SetActor(pressurePlate);
+	Entity* pressurePlateObj = world->FindEntity("PressurePlate");
+	if (pressurePlateObj)
+	{
+		Actor* pressurePlate = new PressurePlate();
+		pressurePlateObj->SetActor(pressurePlate);
+	}
+	else
+	{
+		Print("Pressure plate actor setting failed!");
+	}
+
 
 	return true;
 }

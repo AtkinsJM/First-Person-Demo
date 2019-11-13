@@ -29,6 +29,10 @@ class PressurePlate : public Actor
 		Joint* springJoint;
 		float pressedHeight;
 		bool bPressed;
-		Material* unpressedMat;
+		Texture* unpressedTexture;
+		Texture* pressedTexture;
+		Material* material;
+
 		Material* pressedMat;
+		Material* unpressedMat;
 };

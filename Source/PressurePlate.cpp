@@ -5,9 +5,11 @@ PressurePlate::PressurePlate()
 	springJoint = nullptr;
 	bPressed = false;
 	
-	unpressedMat = nullptr;
+	unpressedTexture = nullptr;
+	pressedTexture = nullptr;
+	material = nullptr;
 	pressedMat = nullptr;
-
+	unpressedMat = nullptr;
 }
 
 PressurePlate::~PressurePlate()
@@ -17,34 +19,26 @@ PressurePlate::~PressurePlate()
 void PressurePlate::Attach()
 {
 	pressedMat = Material::Load("Materials/Developer/greengrid.mat");
-	unpressedMat = Material::Load("Materials/Developer/bluegrid.mat");
-
+	unpressedMat = Material::Load("Materials/Developer/orangegrid.mat");
+	
 	startingPos = entity->GetPosition();
 	startingRot = entity->GetRotation();
-	pressedHeight = startingPos.y - 0.30f;
+	pressedHeight = startingPos.y - 0.18f;
 	springJoint = Joint::Kinematic(0, 0, 0, entity);
 	springJoint->SetFriction(5000.0f, 3500.0f);
-	springJoint->SetTargetPosition(entity->GetPosition());
 
 }
 
 void PressurePlate::UpdateWorld()
 {
-	if (!bPressed && entity->GetPosition().y <= pressedHeight)
+	if ((!bPressed && entity->GetPosition().y <= pressedHeight) || bPressed && entity->GetPosition().y > pressedHeight)
 	{
 		TogglePressed();
 	}
-	if (bPressed && entity->GetPosition().y > pressedHeight)
-	{
-		TogglePressed();
-		
-	}
-
 }
 
 void PressurePlate::TogglePressed()
 {
 	bPressed = !bPressed;
-	// TODO: work out why material isn't being updated
-	entity->SetMaterial(bPressed ? pressedMat : unpressedMat);
+	entity->GetChild(0)->SetMaterial(bPressed ? pressedMat : unpressedMat);
 }

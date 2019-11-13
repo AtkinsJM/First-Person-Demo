@@ -9,7 +9,7 @@ FirstPersonController::FirstPersonController(Camera* camera)
 	screenCentre = Vec2(window->GetWidth() / 2, window->GetHeight() / 2);
 
 	walkingSpeed = 4;
-	jumpSpeed = 7;
+	jumpSpeed = 4;
 	turnRate = 0.15f;
 	lookUpRate = 0.1f;
 	lookUpAngleClamp = 75.0f;
@@ -48,8 +48,10 @@ void FirstPersonController::Attach()
 	Entity* playerStart = World::GetCurrent()->FindEntity("Player Start");
 
 	Vec3 playerPos = playerStart ? playerStart->GetPosition() : Vec3(0, 2, 0);
+	Vec3 playerRot = playerStart ? playerStart->GetRotation() : Vec3(0, 0, 0);
 
 	entity->SetPosition(playerPos);
+	entity->SetRotation(playerRot);
 	entity->SetPhysicsMode(Entity::CharacterPhysics);
 	entity->SetMass(70);	
 

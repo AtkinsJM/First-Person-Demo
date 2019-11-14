@@ -7,6 +7,8 @@ PressurePlate::PressurePlate()
 
 	model = nullptr;
 
+	triggerDoor = nullptr;
+
 	// Create material
 	material = Material::Create();
 	
@@ -40,9 +42,10 @@ void PressurePlate::Attach()
 	// Set up spring joint
 	springJoint = Joint::Kinematic(0, 0, 0, entity);
 	int requiredMass = String::Int(entity->GetKeyValue("requiredMass"));
-	float friction = 95.0f + 5.0f * requiredMass;
+	float friction = 90.0f + 5.0f * requiredMass;
 	springJoint->SetFriction(5000.0f, friction);
 
+	triggerDoor = World::GetCurrent()->FindEntity(entity->GetKeyValue("triggerDoor"));
 }
 
 void PressurePlate::UpdateWorld()
@@ -64,5 +67,9 @@ void PressurePlate::TogglePressed()
 	if (model)
 	{
 		model->SetColor(bPressed ? pressedColor : unpressedColor);
+	}
+	if (triggerDoor)
+	{
+		triggerDoor->Move(bPressed ? Vec3(0, 2, 0) : Vec3(0, -2, 0));
 	}
 }

@@ -31,9 +31,7 @@ class PressurePlate : public Actor
 		bool bPressed;
 
 		Entity* model;
-
+		Vec4 pressedColor;
+		Vec4 unpressedColor;
 		Material* material;
-
-		Texture* pressedTex;
-		Texture* unpressedTex;
 };

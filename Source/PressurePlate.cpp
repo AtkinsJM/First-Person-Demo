@@ -42,7 +42,8 @@ void PressurePlate::Attach()
 	// Set up spring joint
 	springJoint = Joint::Kinematic(0, 0, 0, entity);
 	int requiredMass = String::Int(entity->GetKeyValue("requiredMass"));
-	float friction = 90.0f + 5.0f * requiredMass;
+	// TODO: fine-tune equation
+	float friction = 85.0f + 5.0f * requiredMass;
 	springJoint->SetFriction(5000.0f, friction);
 
 	triggerDoor = World::GetCurrent()->FindEntity(entity->GetKeyValue("triggerDoor"));

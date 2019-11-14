@@ -121,7 +121,7 @@ void FirstPersonController::HandleCarrying()
 			PickInfo pickInfo;
 			if (World::GetCurrent()->Pick(mainCamera->GetPosition(true), mainCamera->GetPosition(true) + (Forward() * reach), OUT pickInfo))
 			{
-				if (pickInfo.entity && (pickInfo.entity->GetKeyValue("tag", "") == "Interactable"))
+				if (pickInfo.entity && (pickInfo.entity->GetKeyValue("tag", "") == "Interactable") && pickInfo.entity->GetMass() <= maxCarryMass)
 				{
 					PickUpObject(pickInfo.entity);
 				}

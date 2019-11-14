@@ -33,7 +33,6 @@ class PressurePlate : public Actor
 		Entity* model;
 		Vec4 pressedColor;
 		Vec4 unpressedColor;
-		Material* material;
 
 		Entity* triggerDoor;
 };

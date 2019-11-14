@@ -9,14 +9,6 @@ PressurePlate::PressurePlate()
 
 	triggerDoor = nullptr;
 
-	// Create material
-	material = Material::Create();
-	
-	// Load and apply a shader
-	Shader* shader = Shader::Load("Shaders/Model/diffuse.shader");
-	material->SetShader(shader);
-	shader->Release();
-
 	pressedColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	unpressedColor = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
@@ -31,7 +23,6 @@ void PressurePlate::Attach()
 	model = entity->FindChild("Model");
 	if (model)
 	{
-		model->SetMaterial(material);
 		model->SetColor(unpressedColor);
 	}
 	

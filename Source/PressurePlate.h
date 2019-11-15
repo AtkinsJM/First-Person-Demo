@@ -35,4 +35,8 @@ class PressurePlate : public Actor
 		Vec4 unpressedColor;
 
 		Entity* triggerDoor;
+
+		Vec3 doorClosedPos;
+		Vec3 doorOpenPos;
+		Vec3 doorTargetPos;
 };

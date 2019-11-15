@@ -11,6 +11,8 @@ PressurePlate::PressurePlate()
 
 	pressedColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	unpressedColor = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	doorTargetPos = Vec3(0, 0, 0);
 }
 
 PressurePlate::~PressurePlate()
@@ -38,6 +40,13 @@ void PressurePlate::Attach()
 	springJoint->SetFriction(5000.0f, friction);
 
 	triggerDoor = World::GetCurrent()->FindEntity(entity->GetKeyValue("triggerDoor"));
+	if (triggerDoor)
+	{
+		doorClosedPos = triggerDoor->GetPosition();
+		Vec3 doorMovement = Vec3(String::Float(entity->GetKeyValue("doorOpenMovementX")), String::Float(entity->GetKeyValue("doorOpenMovementY")), String::Float(entity->GetKeyValue("doorOpenMovementZ")));
+		doorOpenPos = doorClosedPos + doorMovement;
+		doorTargetPos = doorClosedPos;
+	}
 }
 
 void PressurePlate::UpdateWorld()
@@ -50,6 +59,19 @@ void PressurePlate::UpdateWorld()
 
 void PressurePlate::UpdatePhysics()
 {
+	
+	if (triggerDoor)
+	{
+		Vec3 doorDesiredPos = triggerDoor->GetPosition();
+
+		// TODO: specify lerp time properly (0-1)
+		// Move to UpdateWorld?
+		doorDesiredPos.x = Math::Lerp(doorDesiredPos.x, doorTargetPos.x, 0.1f);
+		doorDesiredPos.y = Math::Lerp(doorDesiredPos.y, doorTargetPos.y, 0.1f);
+		doorDesiredPos.z = Math::Lerp(doorDesiredPos.z, doorTargetPos.z, 0.1f);
+		triggerDoor->SetPosition(doorDesiredPos);
+
+	}
 	//springJoint->SetTargetPosition(startingPos, 3.0f);
 }
 
@@ -62,6 +84,8 @@ void PressurePlate::TogglePressed()
 	}
 	if (triggerDoor)
 	{
-		triggerDoor->Move(bPressed ? Vec3(0, 2, 0) : Vec3(0, -2, 0));
+		//triggerDoor->Move(bPressed ? Vec3(0, 2, 0) : Vec3(0, -2, 0));
+		doorTargetPos = bPressed ? doorOpenPos : doorClosedPos;
 	}
+	
 }

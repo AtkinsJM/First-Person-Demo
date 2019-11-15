@@ -39,4 +39,8 @@ class PressurePlate : public Actor
 		Vec3 doorClosedPos;
 		Vec3 doorOpenPos;
 		Vec3 doorTargetPos;
+
+		// TODO: rename these more appropriately
+		float movementStartTime;
+		float doorMovementLength;
 };

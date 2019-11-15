@@ -13,6 +13,7 @@ PressurePlate::PressurePlate()
 	unpressedColor = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	doorTargetPos = Vec3(0, 0, 0);
+	doorMovementLength = 0;
 }
 
 PressurePlate::~PressurePlate()
@@ -55,23 +56,33 @@ void PressurePlate::UpdateWorld()
 	{
 		TogglePressed();
 	}
+
+	// Check door is not null and that door is not already at target position
+	if (triggerDoor && doorMovementLength > 0.01f)
+	{
+		float speed = 1.0f;
+		// Calculate distance already covered since start of movement
+		float distCovered = ((Time::Millisecs() - movementStartTime) / 1000) * speed;
+
+		// Calculate fraction of movement completed
+		float fractionOfMovement = distCovered / doorMovementLength;
+		
+		// If movement not complete, interpolate the door's position
+		if (fractionOfMovement < 0.99f)
+		{
+			Vec3 doorDesiredPos = triggerDoor->GetPosition();
+			doorDesiredPos.x = Math::Lerp(doorDesiredPos.x, doorTargetPos.x, fractionOfMovement);
+			doorDesiredPos.y = Math::Lerp(doorDesiredPos.y, doorTargetPos.y, fractionOfMovement);
+			doorDesiredPos.z = Math::Lerp(doorDesiredPos.z, doorTargetPos.z, fractionOfMovement);
+			triggerDoor->SetPosition(doorDesiredPos);
+		}
+	}
 }
 
 void PressurePlate::UpdatePhysics()
 {
 	
-	if (triggerDoor)
-	{
-		Vec3 doorDesiredPos = triggerDoor->GetPosition();
-
-		// TODO: specify lerp time properly (0-1)
-		// Move to UpdateWorld?
-		doorDesiredPos.x = Math::Lerp(doorDesiredPos.x, doorTargetPos.x, 0.1f);
-		doorDesiredPos.y = Math::Lerp(doorDesiredPos.y, doorTargetPos.y, 0.1f);
-		doorDesiredPos.z = Math::Lerp(doorDesiredPos.z, doorTargetPos.z, 0.1f);
-		triggerDoor->SetPosition(doorDesiredPos);
-
-	}
+	
 	//springJoint->SetTargetPosition(startingPos, 3.0f);
 }
 
@@ -84,8 +95,9 @@ void PressurePlate::TogglePressed()
 	}
 	if (triggerDoor)
 	{
-		//triggerDoor->Move(bPressed ? Vec3(0, 2, 0) : Vec3(0, -2, 0));
 		doorTargetPos = bPressed ? doorOpenPos : doorClosedPos;
+		movementStartTime = Time::Millisecs();
+		doorMovementLength = (triggerDoor->GetPosition() - doorTargetPos).Length();
 	}
 	
 }

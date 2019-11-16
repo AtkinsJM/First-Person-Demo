@@ -55,13 +55,14 @@ void FirstPersonController::Attach()
 	entity->SetPosition(playerPos);
 	entity->SetRotation(playerRot);
 	entity->SetPhysicsMode(Entity::CharacterPhysics);
-	entity->SetMass(70);	
+	entity->SetMass(80);	
 
 	carryPivot = Pivot::Create(mainCamera);
 	carryPivot->SetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
 	
 	flashlight = SpotLight::Create(mainCamera);
 	flashlight->SetPosition(0.4f, -0.4f, 0.4f);
+	Print("Mass: " + String(entity->GetMass()));
 	
 }
 

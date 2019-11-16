@@ -15,6 +15,8 @@ PressurePlate::PressurePlate()
 	targetDesiredPos = Vec3(0, 0, 0);
 	targetMovementLength = 0;
 	targetMovementSpeed = 1.0f;
+
+	sliderJoint = nullptr;
 }
 
 PressurePlate::~PressurePlate()
@@ -44,6 +46,9 @@ void PressurePlate::Attach()
 	targetEntity = World::GetCurrent()->FindEntity(entity->GetKeyValue("targetEntity"));
 	if (targetEntity)
 	{
+		// If you want the object to collide with the scene, set collision type to scene. If you don't want it to collide with the scene, set the collision type to prop
+		targetEntity->SetGravityMode(false);
+		targetEntity->SetMass(1);
 		targetStartPos = targetEntity->GetPosition();
 		Vec3 targetMovementVector = Vec3(String::Float(entity->GetKeyValue("targetMovementX")), String::Float(entity->GetKeyValue("targetMovementY")), String::Float(entity->GetKeyValue("targetMovementZ")));
 		targetEndPos = targetStartPos + targetMovementVector;
@@ -58,32 +63,8 @@ void PressurePlate::UpdateWorld()
 	{
 		TogglePressed();
 	}
-
-	HandleTargetPosition();
 }
 
-void PressurePlate::HandleTargetPosition()
-{
-	// Check target is not null and that target is not already at desired position
-	if (targetEntity && targetMovementLength > 0.01f)
-	{
-		// Calculate distance already covered since start of movement
-		float distCovered = ((Time::Millisecs() - targetMovementStartTime) / 1000) * targetMovementSpeed;
-
-		// Calculate fraction of movement completed
-		float movementCompleted = distCovered / targetMovementLength;
-
-		// If movement not complete, interpolate the door's position
-		if (movementCompleted < 0.99f)
-		{
-			Vec3 targetNewPos = targetEntity->GetPosition();
-			targetNewPos.x = Math::Lerp(targetNewPos.x, targetDesiredPos.x, movementCompleted);
-			targetNewPos.y = Math::Lerp(targetNewPos.y, targetDesiredPos.y, movementCompleted);
-			targetNewPos.z = Math::Lerp(targetNewPos.z, targetDesiredPos.z, movementCompleted);
-			targetEntity->SetPosition(targetNewPos);
-		}
-	}
-}
 
 void PressurePlate::UpdatePhysics()
 {
@@ -99,8 +80,18 @@ void PressurePlate::TogglePressed()
 	}
 	if (targetEntity)
 	{
-		targetDesiredPos = bPressed ? targetEndPos : targetStartPos;
-		targetMovementStartTime = Time::Millisecs();
-		targetMovementLength = (targetEntity->GetPosition() - targetDesiredPos).Length();
+		Vec3 desiredPos = bPressed ? targetEndPos : targetStartPos;
+		Vec3 movementVector = (targetEntity->GetPosition() - desiredPos);
+		float distance = movementVector.Length();
+		if (sliderJoint)
+		{
+			sliderJoint->DisableMotor();
+			sliderJoint->Release();
+		}
+		sliderJoint = Joint::Slider(desiredPos.x, desiredPos.y, desiredPos.z, movementVector.x, movementVector.y, movementVector.z, targetEntity, nullptr);
+		sliderJoint->EnableMotor();
+		sliderJoint->SetMotorSpeed(targetMovementSpeed);
+		sliderJoint->SetAngle(-distance);
+
 	}
 }

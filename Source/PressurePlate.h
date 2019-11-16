@@ -45,4 +45,6 @@ class PressurePlate : public Actor
 		float targetMovementStartTime;
 		float targetMovementLength;
 		float targetMovementSpeed;
+
+		Joint* sliderJoint;
 };

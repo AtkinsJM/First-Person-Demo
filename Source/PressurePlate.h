@@ -12,9 +12,8 @@ class PressurePlate : public Actor
 		virtual void Attach();
 		//virtual void Detach();
 		virtual void UpdateWorld();
-		void HandleTargetPosition();
 		//virtual void UpdateMatrix();
-		virtual void UpdatePhysics();
+		//virtual void UpdatePhysics();
 		//virtual void Wake();
 		//virtual void Sleep();
 		//virtual void Collision(Entity* entity, const Vec3& position, const Vec3& normal, float speed);
@@ -24,6 +23,9 @@ class PressurePlate : public Actor
 		//virtual void ReceiveSignal(const std::string& inputname, Entity* sender);
 
 		void TogglePressed();
+
+		void SetUpTargetEntity();
+
 	private:
 		Vec3 startingPos;
 		Vec3 startingRot;
@@ -39,11 +41,7 @@ class PressurePlate : public Actor
 
 		Vec3 targetStartPos;
 		Vec3 targetEndPos;
-		Vec3 targetDesiredPos;
 
-		// TODO: rename these more appropriately
-		float targetMovementStartTime;
-		float targetMovementLength;
 		float targetMovementSpeed;
 
 		Joint* sliderJoint;

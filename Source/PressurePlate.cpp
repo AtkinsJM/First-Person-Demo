@@ -52,8 +52,10 @@ void PressurePlate::Attach()
 		targetStartPos = targetEntity->GetPosition();
 		Vec3 targetMovementVector = Vec3(String::Float(entity->GetKeyValue("targetMovementX")), String::Float(entity->GetKeyValue("targetMovementY")), String::Float(entity->GetKeyValue("targetMovementZ")));
 		targetEndPos = targetStartPos + targetMovementVector;
-		targetDesiredPos = targetStartPos;
 		targetMovementSpeed = String::Float(entity->GetKeyValue("targetLerpSpeed"));
+		sliderJoint = Joint::Slider(targetStartPos.x, targetStartPos.y, targetStartPos.z, 0, 0, 0, targetEntity, nullptr);
+		sliderJoint->EnableMotor();
+		sliderJoint->SetAngle(0);
 	}
 }
 

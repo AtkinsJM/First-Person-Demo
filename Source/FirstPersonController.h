@@ -28,6 +28,8 @@ class FirstPersonController : public Actor
 		void PickUpObject(Entity* obj);
 		void DropObject();
 
+		void ToggleFlashlight();
+
 		FORCEINLINE Vec3 Forward() { return TFormVector(0, 0, 1, mainCamera, NULL); }
 
 	private:
@@ -55,4 +57,6 @@ class FirstPersonController : public Actor
 		bool bSprinting;
 
 		float carriedMass;
+
+		SpotLight* flashlight;
 };

@@ -32,6 +32,8 @@ FirstPersonController::FirstPersonController(Camera* camera)
 	bCrouching = false;
 	bSprinting = false;
 
+	flashlight = nullptr;
+
 }
 
 FirstPersonController::~FirstPersonController()
@@ -57,6 +59,10 @@ void FirstPersonController::Attach()
 
 	carryPivot = Pivot::Create(mainCamera);
 	carryPivot->SetPosition(mainCamera->GetPosition(true) + (Forward() * reach), true);
+	
+	flashlight = SpotLight::Create(mainCamera);
+	flashlight->SetPosition(0.4f, -0.4f, 0.4f);
+	
 }
 
 void FirstPersonController::UpdateWorld()
@@ -104,6 +110,11 @@ void FirstPersonController::HandleInput()
 
 	entity->SetInput(turnRotation, forward, right, jump, bCrouching);
 	mainCamera->SetRotation(lookUpRotation, 0, 0);
+
+	if (window->KeyHit(Key::F))
+	{
+		ToggleFlashlight();
+	}
 }
 
 void FirstPersonController::HandleCarrying()
@@ -145,7 +156,8 @@ bool FirstPersonController::IsGrounded()
 bool FirstPersonController::CanStand()
 {
 	PickInfo pickinfo;
-	return !(World::GetCurrent()->Pick(entity->GetPosition(), entity->GetPosition() + Vec3(0, crouchingHeight + 20, 0), pickinfo, 0.40f, true));
+
+	return !(World::GetCurrent()->Pick(entity->GetPosition() + Vec3(0, 0.45f, 0), entity->GetPosition() + Vec3(0, crouchingHeight + 0.20f, 0), pickinfo, 0.40f, true));
 }
 
 void FirstPersonController::PickUpObject(Entity* obj)
@@ -166,6 +178,18 @@ void FirstPersonController::DropObject()
 	carriedObject->SetCollisionType(Collision::Prop);
 	carriedObjectJoint->Release();
 	carriedObject = nullptr;
+}
+
+void FirstPersonController::ToggleFlashlight()
+{
+	if (flashlight->Hidden())
+	{
+		flashlight->Show();
+	}
+	else
+	{
+		flashlight->Hide();
+	}
 }
 
 void FirstPersonController::UpdatePhysics()

@@ -7,13 +7,14 @@ PressurePlate::PressurePlate()
 
 	model = nullptr;
 
-	triggerDoor = nullptr;
+	targetEntity = nullptr;
 
 	pressedColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	unpressedColor = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	doorTargetPos = Vec3(0, 0, 0);
-	doorMovementLength = 0;
+	targetDesiredPos = Vec3(0, 0, 0);
+	targetMovementLength = 0;
+	targetMovementSpeed = 1.0f;
 }
 
 PressurePlate::~PressurePlate()
@@ -40,13 +41,14 @@ void PressurePlate::Attach()
 	float friction = 85.0f + 5.0f * requiredMass;
 	springJoint->SetFriction(5000.0f, friction);
 
-	triggerDoor = World::GetCurrent()->FindEntity(entity->GetKeyValue("triggerDoor"));
-	if (triggerDoor)
+	targetEntity = World::GetCurrent()->FindEntity(entity->GetKeyValue("targetEntity"));
+	if (targetEntity)
 	{
-		doorClosedPos = triggerDoor->GetPosition();
-		Vec3 doorMovement = Vec3(String::Float(entity->GetKeyValue("doorOpenMovementX")), String::Float(entity->GetKeyValue("doorOpenMovementY")), String::Float(entity->GetKeyValue("doorOpenMovementZ")));
-		doorOpenPos = doorClosedPos + doorMovement;
-		doorTargetPos = doorClosedPos;
+		targetStartPos = targetEntity->GetPosition();
+		Vec3 targetMovementVector = Vec3(String::Float(entity->GetKeyValue("targetMovementX")), String::Float(entity->GetKeyValue("targetMovementY")), String::Float(entity->GetKeyValue("targetMovementZ")));
+		targetEndPos = targetStartPos + targetMovementVector;
+		targetDesiredPos = targetStartPos;
+		targetMovementSpeed = String::Float(entity->GetKeyValue("targetLerpSpeed"));
 	}
 }
 
@@ -57,24 +59,28 @@ void PressurePlate::UpdateWorld()
 		TogglePressed();
 	}
 
-	// Check door is not null and that door is not already at target position
-	if (triggerDoor && doorMovementLength > 0.01f)
+	HandleTargetPosition();
+}
+
+void PressurePlate::HandleTargetPosition()
+{
+	// Check target is not null and that target is not already at desired position
+	if (targetEntity && targetMovementLength > 0.01f)
 	{
-		float speed = 1.0f;
 		// Calculate distance already covered since start of movement
-		float distCovered = ((Time::Millisecs() - movementStartTime) / 1000) * speed;
+		float distCovered = ((Time::Millisecs() - targetMovementStartTime) / 1000) * targetMovementSpeed;
 
 		// Calculate fraction of movement completed
-		float fractionOfMovement = distCovered / doorMovementLength;
-		
+		float movementCompleted = distCovered / targetMovementLength;
+
 		// If movement not complete, interpolate the door's position
-		if (fractionOfMovement < 0.99f)
+		if (movementCompleted < 0.99f)
 		{
-			Vec3 doorDesiredPos = triggerDoor->GetPosition();
-			doorDesiredPos.x = Math::Lerp(doorDesiredPos.x, doorTargetPos.x, fractionOfMovement);
-			doorDesiredPos.y = Math::Lerp(doorDesiredPos.y, doorTargetPos.y, fractionOfMovement);
-			doorDesiredPos.z = Math::Lerp(doorDesiredPos.z, doorTargetPos.z, fractionOfMovement);
-			triggerDoor->SetPosition(doorDesiredPos);
+			Vec3 targetNewPos = targetEntity->GetPosition();
+			targetNewPos.x = Math::Lerp(targetNewPos.x, targetDesiredPos.x, movementCompleted);
+			targetNewPos.y = Math::Lerp(targetNewPos.y, targetDesiredPos.y, movementCompleted);
+			targetNewPos.z = Math::Lerp(targetNewPos.z, targetDesiredPos.z, movementCompleted);
+			targetEntity->SetPosition(targetNewPos);
 		}
 	}
 }
@@ -82,8 +88,6 @@ void PressurePlate::UpdateWorld()
 void PressurePlate::UpdatePhysics()
 {
 	
-	
-	//springJoint->SetTargetPosition(startingPos, 3.0f);
 }
 
 void PressurePlate::TogglePressed()
@@ -93,11 +97,10 @@ void PressurePlate::TogglePressed()
 	{
 		model->SetColor(bPressed ? pressedColor : unpressedColor);
 	}
-	if (triggerDoor)
+	if (targetEntity)
 	{
-		doorTargetPos = bPressed ? doorOpenPos : doorClosedPos;
-		movementStartTime = Time::Millisecs();
-		doorMovementLength = (triggerDoor->GetPosition() - doorTargetPos).Length();
+		targetDesiredPos = bPressed ? targetEndPos : targetStartPos;
+		targetMovementStartTime = Time::Millisecs();
+		targetMovementLength = (targetEntity->GetPosition() - targetDesiredPos).Length();
 	}
-	
 }

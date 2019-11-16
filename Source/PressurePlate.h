@@ -12,6 +12,7 @@ class PressurePlate : public Actor
 		virtual void Attach();
 		//virtual void Detach();
 		virtual void UpdateWorld();
+		void HandleTargetPosition();
 		//virtual void UpdateMatrix();
 		virtual void UpdatePhysics();
 		//virtual void Wake();
@@ -34,13 +35,14 @@ class PressurePlate : public Actor
 		Vec4 pressedColor;
 		Vec4 unpressedColor;
 
-		Entity* triggerDoor;
+		Entity* targetEntity;
 
-		Vec3 doorClosedPos;
-		Vec3 doorOpenPos;
-		Vec3 doorTargetPos;
+		Vec3 targetStartPos;
+		Vec3 targetEndPos;
+		Vec3 targetDesiredPos;
 
 		// TODO: rename these more appropriately
-		float movementStartTime;
-		float doorMovementLength;
+		float targetMovementStartTime;
+		float targetMovementLength;
+		float targetMovementSpeed;
 };

@@ -18,7 +18,7 @@ App::~App()
 
 bool App::Start()
 {
-	window = Window::Create("My Game", 0, 0, 1024, 768);
+	window = Window::Create("My Game", 0, 0, 1280, 720);
 	context = Context::Create(window);
 	world = World::Create();
 	camera = Camera::Create();

@@ -1,6 +1,7 @@
 #include "App.h"
 #include "FirstPersonController.h"
 #include "PressurePlate.h"
+#include "MovingPlatform.h"
 
 using namespace Leadwerks;
 
@@ -58,6 +59,11 @@ bool App::Start()
 		else if (e->GetKeyValue("name") == "crate1")
 		{
 			Print("Found a crate!");
+		}
+		else if (e->GetKeyValue("tag") == "MovingPlatform")
+		{
+			Actor* movingPlatform = new MovingPlatform();
+			e->SetActor(movingPlatform);
 		}
 	}
 

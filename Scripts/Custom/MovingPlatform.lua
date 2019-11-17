@@ -1,3 +1,4 @@
+Script.numWaypoints = 1 --choice "Number of waypoints" "0, 1, 2, 3"
 Script.waypoint1 = nil --entity "Waypoint 1"
 Script.waypoint2 = nil --entity "Waypoint 2"
 Script.waypoint3 = nil --entity "Waypoint 3"
@@ -8,14 +9,19 @@ Script.endBehaviour = Loop --choiceedit "End Behaviour" "Loop, Reverse, Restart"
 
 function Script:Start()
 	self.entity:SetKeyValue("tag", "MovingPlatform")
+	self.entity:SetKeyValue("numWaypoints", self.numWaypoints)
+	local string waypointName = ""
 	if self.waypoint1~=nil then
-		self.entity:SetKeyValue("waypoint1", self.waypoint1)
+		waypointName =self.waypoint1:GetKeyValue("name")
+		self.entity:SetKeyValue("waypoint1", waypointName)
 	end
 	if self.waypoint2~=nil then
-		self.entity:SetKeyValue("waypoint2", self.waypoint2)
+		waypointName =self.waypoint2:GetKeyValue("name")
+		self.entity:SetKeyValue("waypoint2", waypointName)
 	end
 	if self.waypoint3~=nil then
-		self.entity:SetKeyValue("waypoint3", self.waypoint3)
+		waypointName =self.waypoint3:GetKeyValue("name")
+		self.entity:SetKeyValue("waypoint3", waypointName)
 	end
 	self.entity:SetKeyValue("speed", self.speed)
 	self.entity:SetKeyValue("automatic", self.automatic)

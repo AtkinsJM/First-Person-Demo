@@ -3,6 +3,13 @@
 
 using namespace Leadwerks;
 
+enum class MovingPlatformBehaviour
+{
+	LOOP,
+	REVERSE,
+	RESTART
+};
+
 class MovingPlatform : public Actor
 {
 	public:
@@ -30,4 +37,8 @@ class MovingPlatform : public Actor
 		float speed;
 
 		Joint* sliderJoint;
+
+		MovingPlatformBehaviour behaviour;
+
+		bool bReverseWaypoints;
 };

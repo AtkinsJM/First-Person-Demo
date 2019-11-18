@@ -5,6 +5,8 @@ MovingPlatform::MovingPlatform()
 	currentWaypointIndex = 0;
 	sliderJoint = nullptr;
 	speed = 1.0f;
+	behaviour = MovingPlatformBehaviour::LOOP;
+	bReverseWaypoints = false;
 }
 
 MovingPlatform::~MovingPlatform()
@@ -38,6 +40,21 @@ void MovingPlatform::Attach()
 	}
 	speed = String::Float(entity->GetKeyValue("speed"));
 
+	// Assign behaviour enum value
+	string behaviourString = entity->GetKeyValue("endBehaviour");
+	if (behaviourString == "Loop")
+	{
+		behaviour = MovingPlatformBehaviour::LOOP;
+	}
+	else if (behaviourString == "Reverse")
+	{
+		behaviour = MovingPlatformBehaviour::REVERSE;
+	}
+	else if (behaviourString == "Restart")
+	{
+		behaviour = MovingPlatformBehaviour::RESTART;
+	}
+
 	// Set up initial slider to hold entity in place
 	sliderJoint = Joint::Slider(startPos.x, startPos.y, startPos.z, 0, 0, 0, entity, nullptr);
 	sliderJoint->EnableMotor();
@@ -49,16 +66,43 @@ void MovingPlatform::UpdateWorld()
 	if (waypoints.size() == 0) { return; }
 
 	float distance = (entity->GetPosition() - waypoints[currentWaypointIndex]).Length();
-	if (distance < 0.01f && waypoints.size() > 1)
+	if (distance < 0.02f && waypoints.size() > 1)
 	{
+		entity->SetPosition(waypoints[currentWaypointIndex]);
+		// Determine next waypoint index based on behaviour
+		switch (behaviour)
+		{
+			case MovingPlatformBehaviour::REVERSE:
+				if (currentWaypointIndex == waypoints.size() - 1)
+				{
+					bReverseWaypoints = true;
+				}
+				else if (currentWaypointIndex == 0)
+				{
+					bReverseWaypoints = false;
+				}
+				currentWaypointIndex = bReverseWaypoints ? currentWaypointIndex - 1 : currentWaypointIndex + 1;
+				break;
+			case MovingPlatformBehaviour::RESTART:
+				currentWaypointIndex++;
+				if (currentWaypointIndex == waypoints.size())
+				{
+					currentWaypointIndex = 0;
+					entity->SetPosition(waypoints[currentWaypointIndex]);
+					currentWaypointIndex++;
+				}
+				break;
+			case MovingPlatformBehaviour::LOOP:
+			default:
+				currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.size();
+				break;
+		}
 		SetNextWaypoint();
 	}
 }
 
 void MovingPlatform::SetNextWaypoint()
 {
-	currentWaypointIndex = (currentWaypointIndex+1) % waypoints.size();
-
 	Vec3 newWaypoint = waypoints[currentWaypointIndex];
 	Vec3 movementVector = (entity->GetPosition() - newWaypoint);
 	float distance = movementVector.Length();
@@ -74,5 +118,4 @@ void MovingPlatform::SetNextWaypoint()
 	sliderJoint->EnableMotor();
 	sliderJoint->SetMotorSpeed(speed);
 	sliderJoint->SetAngle(-distance);
-	
 }

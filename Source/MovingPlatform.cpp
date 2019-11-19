@@ -16,7 +16,7 @@ MovingPlatform::~MovingPlatform()
 void MovingPlatform::Attach()
 {
 	entity->SetGravityMode(false);
-	entity->SetMass(1);
+	entity->SetMass(-1);
 
 	int numWaypoints = String::Int(entity->GetKeyValue("numWaypoints"));
 	Vec3 startPos = entity->GetPosition(true);
@@ -118,4 +118,6 @@ void MovingPlatform::SetNextWaypoint()
 	sliderJoint->EnableMotor();
 	sliderJoint->SetMotorSpeed(speed);
 	sliderJoint->SetAngle(-distance);
+	sliderJoint->EnableLimits();
+	sliderJoint->SetLimits(0, 1);
 }

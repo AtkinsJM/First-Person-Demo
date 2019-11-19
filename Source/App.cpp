@@ -2,6 +2,7 @@
 #include "FirstPersonController.h"
 #include "PressurePlate.h"
 #include "MovingPlatform.h"
+#include "Elevator.h"
 
 using namespace Leadwerks;
 
@@ -64,6 +65,11 @@ bool App::Start()
 		{
 			Actor* movingPlatform = new MovingPlatform();
 			e->SetActor(movingPlatform);
+		}
+		else if (e->GetKeyValue("tag") == "Elevator")
+		{
+			Actor* elevator = new Elevator();
+			e->SetActor(elevator);
 		}
 	}
 

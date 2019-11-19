@@ -118,6 +118,4 @@ void MovingPlatform::SetNextWaypoint()
 	sliderJoint->EnableMotor();
 	sliderJoint->SetMotorSpeed(speed);
 	sliderJoint->SetAngle(-distance);
-	sliderJoint->EnableLimits();
-	sliderJoint->SetLimits(0, 1);
 }
